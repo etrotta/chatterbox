@@ -145,9 +145,9 @@ def get_or_load_model():
     if MODEL is None:
         print("Model not loaded, initializing...")
         try:
-            MODEL = ChatterboxMultilingualTTS.from_pretrained(DEVICE)
+            MODEL = ChatterboxMultilingualTTS.from_pretrained(DEVICE)  # type: ignore
             if hasattr(MODEL, "to") and str(MODEL.device) != DEVICE:
-                MODEL.to(DEVICE)
+                MODEL.to(DEVICE)  # type: ignore
             print(
                 f"Model loaded successfully. Internal device: {getattr(MODEL, 'device', 'N/A')}"
             )
@@ -190,7 +190,7 @@ def resolve_audio_prompt(language_id: str, provided_path: str | None) -> str | N
 def generate_tts_audio(
     text_input: str,
     language_id: str,
-    audio_prompt_path_input: str = None,
+    audio_prompt_path_input: str | None = None,
     exaggeration_input: float = 0.5,
     temperature_input: float = 0.8,
     seed_num_input: int = 0,
@@ -229,7 +229,7 @@ def generate_tts_audio(
     # Handle optional audio prompt
     chosen_prompt = audio_prompt_path_input or default_audio_for_ui(language_id)
 
-    generate_kwargs = {
+    generate_kwargs: dict = {
         "exaggeration": exaggeration_input,
         "temperature": temperature_input,
         "cfg_weight": cfgw_input,
@@ -314,7 +314,7 @@ with gr.Blocks() as demo:
             fn=on_language_change,
             inputs=[language_id, ref_wav, text],
             outputs=[ref_wav, text],
-            show_progress=False,
+            show_progress="minimal",
         )
 
     run_btn.click(
