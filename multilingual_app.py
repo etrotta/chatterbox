@@ -2,7 +2,11 @@ import random
 import numpy as np
 import torch
 from chatterbox.mtl_tts import ChatterboxMultilingualTTS, SUPPORTED_LANGUAGES
-import gradio as gr
+
+try:
+    import gradio as gr
+except ImportError:
+    raise Exception("You must install gradio to run the example apps")
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"🚀 Running on device: {DEVICE}")

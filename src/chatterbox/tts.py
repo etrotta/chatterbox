@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from pathlib import Path
+import warnings
 
 import librosa
 import torch
-import perth
 import torch.nn.functional as F
 from huggingface_hub import hf_hub_download
 from safetensors.torch import load_file
@@ -123,7 +123,12 @@ class ChatterboxTTS:
         self.tokenizer = tokenizer
         self.device = device
         self.conds = conds
-        self.watermarker = perth.PerthImplicitWatermarker()
+        try:
+            import perth
+            self.watermarker = perth.PerthImplicitWatermarker()
+        except ImportError:
+            warnings.warn("Could not find `resemble-perth` installed, will not watermark results")
+            self.watermarker = None
 
     @classmethod
     def from_local(cls, ckpt_dir, device) -> 'ChatterboxTTS':
@@ -268,5 +273,8 @@ class ChatterboxTTS:
                 ref_dict=self.conds.gen,
             )
             wav = wav.squeeze(0).detach().cpu().numpy()
-            watermarked_wav = self.watermarker.apply_watermark(wav, sample_rate=self.sr)
+            if self.watermarker is not None:
+                watermarked_wav = self.watermarker.apply_watermark(wav, sample_rate=self.sr)
+            else:
+                watermarked_wav = wav
         return torch.from_numpy(watermarked_wav).unsqueeze(0)

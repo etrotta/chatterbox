@@ -15,12 +15,13 @@ import logging
 import random
 from typing import Dict, Optional
 
-logger = logging.getLogger(__name__)
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
 from .utils.mask import make_pad_mask
 from .configs import CFM_PARAMS
+
+logger = logging.getLogger(__name__)
 
 
 class MaskedDiffWithXvec(torch.nn.Module):

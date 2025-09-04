@@ -10,19 +10,14 @@ authors = [
 ]
 dependencies = [
     "numpy>=1.24.0,<1.26.0",
-    "librosa==0.11.0",
+    "librosa~=0.11.0",
     "s3tokenizer",
     "torch==2.6.0",
     "torchaudio==2.6.0",
     "transformers==4.46.3",
     "diffusers==0.29.0",
-    "resemble-perth==1.0.1",
-    "conformer==0.3.2",
-    "safetensors==0.5.3",
-    "pkuseg ==0.0.25",
-    "pykakasi==2.3.0",
-    "gradio==5.44.1",
-
+    "einops>=0.8.1",
+    "scipy>=1.15.3",
 ]
 
 [project.urls]
@@ -35,3 +30,23 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[dependency-groups]
+watermark = [
+    "resemble-perth==1.0.1",
+]
+gradio = [
+    "gradio==5.44.1",
+]
+japanese = [
+    "pykakasi==2.3.0",
+]
+chinese = [
+    "pkuseg==0.0.25",
+]
+all = [
+    "resemble-perth==1.0.1",
+    "gradio==5.44.1",
+    "pykakasi==2.3.0",
+    "pkuseg==0.0.25",
+]

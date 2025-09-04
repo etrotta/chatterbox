@@ -1,8 +1,8 @@
 from pathlib import Path
+import warnings
 
 import librosa
 import torch
-import perth
 from huggingface_hub import hf_hub_download
 from safetensors.torch import load_file
 
@@ -26,7 +26,14 @@ class ChatterboxVC:
         self.sr = S3GEN_SR
         self.s3gen = s3gen
         self.device = device
-        self.watermarker = perth.PerthImplicitWatermarker()
+
+        try:
+            import perth
+            self.watermarker = perth.PerthImplicitWatermarker()
+        except ImportError:
+            warnings.warn("Could not find `resemble-perth` installed, will not watermark results")
+            self.watermarker = None
+
         if ref_dict is None:
             self.ref_dict = None
         else:
@@ -100,5 +107,8 @@ class ChatterboxVC:
                 ref_dict=self.ref_dict,
             )
             wav = wav.squeeze(0).detach().cpu().numpy()
-            watermarked_wav = self.watermarker.apply_watermark(wav, sample_rate=self.sr)
+            if self.watermarker is not None:
+                watermarked_wav = self.watermarker.apply_watermark(wav, sample_rate=self.sr)
+            else:
+                watermarked_wav = wav
         return torch.from_numpy(watermarked_wav).unsqueeze(0)
